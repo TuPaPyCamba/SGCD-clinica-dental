@@ -12,20 +12,20 @@ import { UbicacionSection } from './_components/UbicacionSection'
 import { CTASection } from './_components/CTASection'
 
 export function HomeScreen() {
-  const { fetchAppData, isLoaded } = useAppStore()
+    const { fetchAppData, isLoaded } = useAppStore()
 
-  useEffect(() => {
-    if (!isLoaded) fetchAppData()
-  }, [isLoaded, fetchAppData])
+    useEffect(() => {
+        if (!isLoaded) fetchAppData()
+    }, [isLoaded, fetchAppData])
 
-  return (
-    <div className="min-h-screen">
-      <HeroSection />
-      <StatsSection />
-      <ServiciosPreview />
-      <DoctoresPreview />
-      <UbicacionSection />
-      <CTASection />
-    </div>
-  )
+    return (
+        <div className="min-h-screen">
+            <HeroSection />
+            <StatsSection />
+            <ServiciosPreview />
+            <DoctoresPreview />
+            <UbicacionSection />
+            <CTASection />
+        </div>
+    )
 }
