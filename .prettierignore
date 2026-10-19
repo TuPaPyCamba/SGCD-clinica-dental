@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+dist
+.wrangler
+supabase/.branches
+supabase/.temp
+package-lock.json
+*.md
