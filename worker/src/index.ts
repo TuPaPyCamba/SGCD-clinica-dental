@@ -3,6 +3,8 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
 import { authRoutes } from './api/auth/routes'
+import { citasRoutes } from './api/citas/routes'
+import { pacientesRoutes } from './api/pacientes/routes'
 import type { Env } from './types/env'
 
 const app = new Hono<{ Bindings: Env }>()
@@ -24,6 +26,8 @@ app.get('/', (c) => c.json({ status: 'ok', service: 'SGCD Worker', version: '1.0
 app.get('/health', (c) => c.json({ status: 'healthy', timestamp: new Date().toISOString() }))
 
 app.route('/api/auth', authRoutes)
+app.route('/api/citas', citasRoutes)
+app.route('/api/pacientes', pacientesRoutes)
 
 app.notFound((c) => c.json({ success: false, error: 'Endpoint no encontrado', path: c.req.path }, 404))
 app.onError((err, c) => {

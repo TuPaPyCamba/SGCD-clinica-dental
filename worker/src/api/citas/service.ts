@@ -1,5 +1,5 @@
-import { createSupabaseUser } from '../../lib/supabase.ts'
-import types { Env } from '../../types/env.ts'
+import { createSupabaseUser } from '../../lib/supabase'
+import type { Env } from '../../types/env'
 import type { CitaInput } from '../../types'
 
 
