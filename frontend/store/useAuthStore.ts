@@ -51,13 +51,20 @@ export const useAuthStore = create<AuthState>()(
                         data: { session },
                     } = await supabase.auth.getSession()
                     if (session) {
-                        set({ session, user: session.user, isAuthenticated: true })
+                        let perfil = get().perfil
+                        try {
+                            const { data } = await supabase.rpc('rpc_get_mi_perfil')
+                            if (data) perfil = data
+                        } catch (rpcErr) {
+                            console.warn('No se pudo obtener perfil detallado:', rpcErr)
+                        }
+                        set({ session, user: session.user, perfil, isAuthenticated: true })
                     } else {
-                        set({ session: null, user: null, isAuthenticated: false })
+                        set({ session: null, user: null, perfil: null, isAuthenticated: false })
                     }
                 } catch (error) {
                     console.error('Error initializing auth:', error)
-                    set({ session: null, user: null, isAuthenticated: false })
+                    set({ session: null, user: null, perfil: null, isAuthenticated: false })
                 } finally {
                     set({ isLoading: false })
                 }
@@ -83,3 +90,21 @@ export const useAuthStore = create<AuthState>()(
         }
     )
 )
+
+if (typeof window !== 'undefined') {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+            useAuthStore.getState().setSession(session)
+            useAuthStore.getState().setUser(session.user)
+            try {
+                const { data } = await supabase.rpc('rpc_get_mi_perfil')
+                if (data) useAuthStore.getState().setPerfil(data)
+            } catch {
+                // Ignore fallback
+            }
+            useAuthStore.getState().setLoading(false)
+        } else if (event === 'SIGNED_OUT') {
+            useAuthStore.getState().reset()
+        }
+    })
+}
