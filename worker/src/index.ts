@@ -13,11 +13,21 @@ app.use('*', logger())
 app.use('*', prettyJSON())
 app.use('*', async (c, next) => {
   return cors({
-    origin: c.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: (origin) => {
+      if (!origin) return '*'
+      if (
+        origin.includes('localhost') ||
+        origin.endsWith('.pages.dev') ||
+        (c.env.CORS_ORIGIN && origin === c.env.CORS_ORIGIN)
+      ) {
+        return origin
+      }
+      return c.env.CORS_ORIGIN || origin
+    },
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     exposeHeaders: ['Content-Length'],
-    maxAge: 600,
+    maxAge: 86400,
     credentials: true,
   })(c, next)
 })
