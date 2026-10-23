@@ -9,3 +9,6 @@ citasRoutes.use('*', authMiddleware)
 
 // Consultar disponibilidad de horarios para las citas
 citasRoutes.get('/disponibilidad', getDisponibilidad)
+
+// Listar historial y citas próximas del usuario autenticado
+citasRoutes.get('/', getMisCitas)

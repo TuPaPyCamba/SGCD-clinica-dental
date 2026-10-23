@@ -26,3 +26,22 @@ export async function getDisponibilidad(c: Context<{ Bindings: Env; Variables: V
 	if (error) return c.json({ error, success: false }, 404)
 	return c.json({ data, success: true })
 }
+
+export async function getMisCitas(c: Context<{ Bindings: Env; Variables: Variables }>) 
+{
+	// middleware ya lo checó y regresa el token
+	const token = c.req.header('Authorization')!.slice(7)
+	
+	// Filtro opcional por estado
+	const estado = c.req.query('estado')
+	
+	// limites y el offset
+	const limit = parseInt(c.req.query('limit') || '20', 10)
+	const offset = parseInt(c.req.query('offset') || '0', 10)
+
+	// Llamada al servicio
+	const { data, error } = await citasService.getMisCitas(c.env, token, estado, limit, offset)
+	
+	if (error) return c.json({ error, success: false }, 400)
+	return c.json({ data, success: true }, 200)
+}
