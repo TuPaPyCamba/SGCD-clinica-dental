@@ -43,3 +43,85 @@ export async function getDisponibilidad(c: Context<{ Bindings: Env; Variables: V
   }
 
 
+export async function getMisCitas(c: Context<{ Bindings: Env; Variables: Variables }>) 
+{
+	// middleware ya lo checó y regresa el token
+	const token = c.req.header('Authorization')!.slice(7)
+	
+	// Filtro opcional por estado
+	const estado = c.req.query('estado')
+	
+	// limites y el offset
+	const limit = parseInt(c.req.query('limit') || '20', 10)
+	const offset = parseInt(c.req.query('offset') || '0', 10)
+
+	// Llamada al servicio
+	const { data, error } = await citasService.getMisCitas(c.env, token, estado, limit, offset)
+	
+	if (error) return c.json({ error, success: false }, 400)
+	return c.json({ data, success: true }, 200)
+}
+
+export async function agendarCita(c: Context<{ Bindings: Env; Variables: Variables }>
+{
+	// token desde middleware
+	const token = c.req.header('Authorization')!.slice(7)
+	const body = await c.req.json()
+
+	// Campos esperados:
+	const { 
+		pacienteId, 
+		doctorId, 
+		procedimientoId, 
+		sucursalId, 
+		fechaHoraInicio, 
+		notasCliente 
+	} = body
+	
+	// Validación de campos obligatorios
+	if (!pacienteId || !doctorId || !procedimientoId || !sucursalId || !fechaHoraInicio) {
+		return c.json({ error: 'Faltan datos obligatorios para agendar la cita', success: false }, 400)
+	}
+
+	const { data, error } = await citasService.agendarCita(
+		c.env, token, pacienteId, doctorId, procedimientoId, sucursalId, fechaHoraInicio, notasCliente
+	)
+	
+	if (error) return c.json({ error, success: false }, 400)
+	return c.json({ data, success: true }, 201)
+}
+
+
+export async function subirResumen(c: Context<{ Bindings: Env; Variables: Variables }>) 
+{
+	const token = c.req.header('Authorization')!.slice(7)
+	const citaId = c.req.param('id')
+	const body = await c.req.json()
+
+	const { resumen } = body
+
+	// Validación de parametrosss
+	if (!citaId || !resumen) {
+		return c.json({ error: 'Falta el ID de la cita o el texto del resumen', success: false }, 400)
+	}
+
+	const { data, error } = await citasService.subirResumen(c.env, token, citaId, resumen)
+	
+	if (error) return c.json({ error, success: false }, 400)
+	return c.json({ data, success: true }, 200)
+}
+
+export async function getCita(c: Context<{ Bindings: Env; Variables: Variables }>) 
+{
+	// token del middleware 
+	const token = c.req.header('Authorization')!.slice(7)
+	const id = c.req.param('id')
+
+	// validación del ID
+	if (!id) return c.json({ error: 'ID de cita requerido', success: false }, 400)
+
+	const { data, error } = await citasService.getCitaById(c.env, token, id)
+	
+	if (error) return c.json({ error, success: false }, 404)
+	return c.json({ data, success: true }, 200)
+}
