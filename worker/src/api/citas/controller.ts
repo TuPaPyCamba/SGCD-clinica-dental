@@ -26,3 +26,20 @@ export async function getDisponibilidad(c: Context<{ Bindings: Env; Variables: V
 	if (error) return c.json({ error, success: false }, 404)
 	return c.json({ data, success: true })
 }
+
+  export async function cancelarCita(c: Context<{Bindings: Env; Variables: Variables}>) {
+    const token = c.req.header('Authorization')!.slice(7)
+    // el ID de la cita viene en la URL: /api/citas/:id/cancelar
+    const id = c.req.param('id')
+    // el motivo es opcional; si no mandan body, queda vacío y no truena
+    const body = await c.req.json().catch(() => ({}))
+    const motivo = body?.motivo || null
+
+    if (!id) return c.json({success: false, error: 'ID de cita no recibido'}, 400)
+    
+    const {data, error} = await citasService.cancelarCita(c.env, token, id, motivo)
+    if (error) return c.json({success: false, error}, 400)
+    return c.json({success: true, data})  
+  }
+
+
