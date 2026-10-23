@@ -15,3 +15,6 @@ citasRoutes.get('/', getMisCitas)
 
 // Agendar nueva cita
 citasRoutes.get('/', agendarCita)
+
+// Cargar Resumen Médico y Completar Consulta
+citasRoutes.post('/:id/resumen', subirResumen)

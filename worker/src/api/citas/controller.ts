@@ -74,3 +74,23 @@ export async function agendarCita(c: Context<{ Bindings: Env; Variables: Variabl
 	if (error) return c.json({ error, success: false }, 400)
 	return c.json({ data, success: true }, 201)
 }
+
+
+export async function subirResumen(c: Context<{ Bindings: Env; Variables: Variables }>) 
+{
+	const token = c.req.header('Authorization')!.slice(7)
+	const citaId = c.req.param('id')
+	const body = await c.req.json()
+
+	const { resumen } = body
+
+	// Validación de parametrosss
+	if (!citaId || !resumen) {
+		return c.json({ error: 'Falta el ID de la cita o el texto del resumen', success: false }, 400)
+	}
+
+	const { data, error } = await citasService.subirResumen(c.env, token, citaId, resumen)
+	
+	if (error) return c.json({ error, success: false }, 400)
+	return c.json({ data, success: true }, 200)
+}

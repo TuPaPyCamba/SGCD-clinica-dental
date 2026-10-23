@@ -49,4 +49,17 @@ export const citasService = {
 		
 		return { data, error: error?.message }
 	}
+
+	// request a supabase para subir el resumen médico y completar la cita
+	async subirResumen(env: Env, token: string, citaId: string, resumen: string) 
+	{
+		const supabase = createSupabaseUser(env, token)
+		
+		const { data, error } = await supabase.rpc('rpc_doctor_subir_resumen', {
+			p_cita_id: citaId,
+			p_resumen: resumen
+		})
+		
+		return { data, error: error?.message }
+	}
 }
