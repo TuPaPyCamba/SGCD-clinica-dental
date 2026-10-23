@@ -1,6 +1,5 @@
 import { createSupabaseUser } from '../../lib/supabase'
 import type { Env } from '../../types/env'
-import type { CitaInput } from '../../types'
 
 
 export const citasService = { 
@@ -15,6 +14,12 @@ export const citasService = {
 		// regresamos la data a la función que solicitó este servicio, y el error si existe
 		return { data, error: error?.message }
 	},
+    // cancela una cita (la base de datos valida los permisos)
+    async cancelarCita(env: Env, token: string, citaId: string, motivo: string | null) {
+      const supabase = createSupabaseUser(env, token)
+      const {data, error} = await supabase.rpc('rpc_cancelar_cita', {p_cita_id: citaId, p_motivo: motivo})
+      return {data, error: error?.message}
+    },
 
 	// request para listar las citas
 	async getMisCitas(env: Env, token: string, estado: string | undefined, limit: number, offset: number)
