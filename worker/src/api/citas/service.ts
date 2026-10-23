@@ -14,7 +14,7 @@ export const citasService = {
 		const { data, error } = await supabase.rpc('rpc_get_disponibilidad', { p_doctor_id: doctorID, p_fecha: fecha, p_duracion_minutos: duracionMins })
 		// regresamos la data a la función que solicitó este servicio, y el error si existe
 		return { data, error: error?.message }
-	}
+	},
 
 	// request para listar las citas
 	async getMisCitas(env: Env, token: string, estado: string | undefined, limit: number, offset: number)
@@ -29,7 +29,7 @@ export const citasService = {
 		})
 		
 		return { data, error: error?.message }
-	}
+	},
 
 	// request a supabase para agendar una nueva cita
 	async agendarCita(
@@ -48,7 +48,7 @@ export const citasService = {
 		})
 		
 		return { data, error: error?.message }
-	}
+	},
 
 	// request a supabase para subir el resumen médico y completar la cita
 	async subirResumen(env: Env, token: string, citaId: string, resumen: string) 
@@ -61,7 +61,7 @@ export const citasService = {
 		})
 		
 		return { data, error: error?.message }
-	}
+	},
 
 	// request a supabase para conseguir el detalle de una sola cita
 	async getCitaById(env: Env, token: string, citaId: string) 
@@ -83,5 +83,5 @@ export const citasService = {
 		if (!cita) return { data: null, error: 'Cita no encontrada o sin autorización para verla' }
 		
 		return { data: cita, error: null }
-	}
+	},
 }
