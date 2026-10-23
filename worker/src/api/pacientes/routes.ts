@@ -7,3 +7,6 @@ export const pacientesRoutes = new Hono<{ Bindings: Env; Variables: Variables }>
 
 pacientesRoutes.use('*', authMiddleware)
 pacientesRoutes.get('/', getPacientes)
+
+// Registrar Paciente
+pacientesRoutes.post('/', createPaciente)
