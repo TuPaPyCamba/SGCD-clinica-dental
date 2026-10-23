@@ -45,3 +45,32 @@ export async function getMisCitas(c: Context<{ Bindings: Env; Variables: Variabl
 	if (error) return c.json({ error, success: false }, 400)
 	return c.json({ data, success: true }, 200)
 }
+
+export async function agendarCita(c: Context<{ Bindings: Env; Variables: Variables }>
+{
+	// token desde middleware
+	const token = c.req.header('Authorization')!.slice(7)
+	const body = await c.req.json()
+
+	// Campos esperados:
+	const { 
+		pacienteId, 
+		doctorId, 
+		procedimientoId, 
+		sucursalId, 
+		fechaHoraInicio, 
+		notasCliente 
+	} = body
+	
+	// Validación de campos obligatorios
+	if (!pacienteId || !doctorId || !procedimientoId || !sucursalId || !fechaHoraInicio) {
+		return c.json({ error: 'Faltan datos obligatorios para agendar la cita', success: false }, 400)
+	}
+
+	const { data, error } = await citasService.agendarCita(
+		c.env, token, pacienteId, doctorId, procedimientoId, sucursalId, fechaHoraInicio, notasCliente
+	)
+	
+	if (error) return c.json({ error, success: false }, 400)
+	return c.json({ data, success: true }, 201)
+}

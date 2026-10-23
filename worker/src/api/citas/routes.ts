@@ -12,3 +12,6 @@ citasRoutes.get('/disponibilidad', getDisponibilidad)
 
 // Listar historial y citas próximas del usuario autenticado
 citasRoutes.get('/', getMisCitas)
+
+// Agendar nueva cita
+citasRoutes.get('/', agendarCita)

@@ -16,6 +16,7 @@ export const citasService = {
 		return { data, error: error?.message }
 	}
 
+	// request para listar las citas
 	async getMisCitas(env: Env, token: string, estado: string | undefined, limit: number, offset: number)
 	{
 		const supabase = createSupabaseUser(env, token)
@@ -25,6 +26,25 @@ export const citasService = {
 			p_estado: estado || null, 
 			p_limit: limit, 
 			p_offset: offset 
+		})
+		
+		return { data, error: error?.message }
+	}
+
+	// request a supabase para agendar una nueva cita
+	async agendarCita(
+		env: Env, token: string, pacienteId: string, doctorId: string, 
+		procedimientoId: string, sucursalId: string, fechaHoraInicio: string, notasCliente?: string
+	) {
+		const supabase = createSupabaseUser(env, token)
+		
+		const { data, error } = await supabase.rpc('rpc_agendar_cita', {
+			p_paciente_id: pacienteId,
+			p_doctor_id: doctorId,
+			p_procedimiento_id: procedimientoId,
+			p_sucursal_id: sucursalId,
+			p_fecha_hora_inicio: fechaHoraInicio,
+			p_notas_cliente: notasCliente || null
 		})
 		
 		return { data, error: error?.message }
