@@ -94,3 +94,18 @@ export async function subirResumen(c: Context<{ Bindings: Env; Variables: Variab
 	if (error) return c.json({ error, success: false }, 400)
 	return c.json({ data, success: true }, 200)
 }
+
+export async function getCita(c: Context<{ Bindings: Env; Variables: Variables }>) 
+{
+	// token del middleware 
+	const token = c.req.header('Authorization')!.slice(7)
+	const id = c.req.param('id')
+
+	// validación del ID
+	if (!id) return c.json({ error: 'ID de cita requerido', success: false }, 400)
+
+	const { data, error } = await citasService.getCitaById(c.env, token, id)
+	
+	if (error) return c.json({ error, success: false }, 404)
+	return c.json({ data, success: true }, 200)
+}

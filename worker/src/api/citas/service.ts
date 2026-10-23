@@ -62,4 +62,26 @@ export const citasService = {
 		
 		return { data, error: error?.message }
 	}
+
+	// request a supabase para conseguir el detalle de una sola cita
+	async getCitaById(env: Env, token: string, citaId: string) 
+	{
+		const supabase = createSupabaseUser(env, token)
+		
+		// Llamamos a la RPC con un límite amplio (limit)
+		const { data, error } = await supabase.rpc('rpc_get_mis_citas', { 
+			p_estado: null, 
+			p_limit: 100, 
+			p_offset: 0 
+		})
+		
+		if (error) return { data: null, error: error.message }
+		
+		// Buscamos la cita específica, si no regresa la cita es porque no existe o el id no corresponde al usuario actual
+		const cita = data?.find((c: any) => c.id === citaId)
+		
+		if (!cita) return { data: null, error: 'Cita no encontrada o sin autorización para verla' }
+		
+		return { data: cita, error: null }
+	}
 }
