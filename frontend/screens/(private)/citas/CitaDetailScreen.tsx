@@ -24,7 +24,8 @@ interface Cita {
 
 export function CitaDetailScreen() {
     const searchParams = useSearchParams()
-    const citaId = searchParams.get('id')
+    const rawId = searchParams.get('id')
+    const citaId = rawId ? rawId.replace(/\/+$/, '').trim() : null
     const [cita, setCita] = useState<Cita | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isCancelling, setIsCancelling] = useState(false)
@@ -32,6 +33,10 @@ export function CitaDetailScreen() {
 
     useEffect(() => {
         const fetchCita = async () => {
+            if (!citaId) {
+                setIsLoading(false)
+                return
+            }
             try {
                 const {
                     data: { session },
@@ -42,7 +47,7 @@ export function CitaDetailScreen() {
                     headers: { Authorization: `Bearer ${session.access_token}` },
                 })
                 const json = (await res.json()) as { success: boolean; data: Cita }
-                if (json.success) setCita(json.data)
+                if (json.success && json.data) setCita(json.data)
             } catch (err) {
                 console.error(err)
             } finally {

@@ -116,7 +116,7 @@ export function CitasScreen() {
                             {citas.map((cita) => (
                                 <Link
                                     key={cita.id}
-                                    href={`/citas/detalle?id=${cita.id}/`}
+                                    href={`/citas/detalle/?id=${cita.id}`}
                                     className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-primary-100 transition-all flex items-center justify-between group"
                                 >
                                     <div className="flex items-center gap-4">

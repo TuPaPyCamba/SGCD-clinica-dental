@@ -162,7 +162,7 @@ export function DashboardScreen() {
                                 {citasFuturas.map((cita) => (
                                     <Link
                                         key={cita.id}
-                                        href={`/citas/detalle?id=${cita.id}/`}
+                                        href={`/citas/detalle/?id=${cita.id}`}
                                         className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-primary-50 transition-all group"
                                     >
                                         <div className="flex items-center gap-4">
