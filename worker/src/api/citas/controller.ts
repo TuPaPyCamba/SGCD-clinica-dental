@@ -36,7 +36,8 @@ export async function getDisponibilidad(c: Context<{ Bindings: Env; Variables: V
 export async function cancelarCita(c: Context<{ Bindings: Env; Variables: Variables }>) {
     const token = c.req.header('Authorization')!.slice(7)
     // el ID de la cita viene en la URL: /api/citas/:id/cancelar
-    const id = c.req.param('id')
+    const rawId = c.req.param('id')
+    const id = (rawId || '').trim().replace(/\/+$/, '')
     // el motivo es opcional; si no mandan body, queda vacío y no truena
     const body = await c.req.json().catch(() => ({}))
     const motivo = body?.motivo || null
@@ -100,7 +101,8 @@ export async function agendarCita(c: Context<{ Bindings: Env; Variables: Variabl
 
 export async function subirResumen(c: Context<{ Bindings: Env; Variables: Variables }>) {
     const token = c.req.header('Authorization')!.slice(7)
-    const citaId = c.req.param('id')
+    const rawCitaId = c.req.param('id')
+    const citaId = (rawCitaId || '').trim().replace(/\/+$/, '')
     const body = await c.req.json().catch(() => ({}))
 
     const { resumen } = body
@@ -122,7 +124,8 @@ export async function subirResumen(c: Context<{ Bindings: Env; Variables: Variab
 export async function getCita(c: Context<{ Bindings: Env; Variables: Variables }>) {
     // token del middleware
     const token = c.req.header('Authorization')!.slice(7)
-    const id = c.req.param('id')
+    const rawId = c.req.param('id')
+    const id = (rawId || '').trim().replace(/\/+$/, '')
 
     // validación del ID
     if (!id) return c.json({ error: 'ID de cita requerido', success: false }, 400)

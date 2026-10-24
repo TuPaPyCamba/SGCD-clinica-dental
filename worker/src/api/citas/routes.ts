@@ -19,6 +19,7 @@ citasRoutes.get('/disponibilidad', getDisponibilidad)
 
 // Cancelar una cita
 citasRoutes.patch('/:id/cancelar', cancelarCita)
+citasRoutes.patch('/:id/cancelar/', cancelarCita)
 
 // Listar historial y citas prximas del usuario autenticado
 citasRoutes.get('/', getMisCitas)
@@ -28,6 +29,8 @@ citasRoutes.post('/', agendarCita)
 
 // Cargar Resumen Mdico y Completar Consulta
 citasRoutes.post('/:id/resumen', subirResumen)
+citasRoutes.post('/:id/resumen/', subirResumen)
 
 // Obtener detalle individual de una cita
 citasRoutes.get('/:id', getCita)
+citasRoutes.get('/:id/', getCita)

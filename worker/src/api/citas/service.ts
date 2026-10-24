@@ -24,9 +24,10 @@ export const citasService = {
     },
     // cancela una cita (la base de datos valida los permisos)
     async cancelarCita(env: Env, token: string, citaId: string, motivo: string | null) {
+        const cleanId = (citaId || '').trim().replace(/\/+$/, '')
         const supabase = createSupabaseUser(env, token)
         const { data, error } = await supabase.rpc('rpc_cancelar_cita', {
-            p_cita_id: citaId,
+            p_cita_id: cleanId,
             p_motivo: motivo,
         })
         return { data, error: error?.message }
@@ -79,10 +80,11 @@ export const citasService = {
 
     // request a supabase para subir el resumen médico y completar la cita
     async subirResumen(env: Env, token: string, citaId: string, resumen: string) {
+        const cleanId = (citaId || '').trim().replace(/\/+$/, '')
         const supabase = createSupabaseUser(env, token)
 
         const { data, error } = await supabase.rpc('rpc_doctor_subir_resumen', {
-            p_cita_id: citaId,
+            p_cita_id: cleanId,
             p_resumen: resumen,
         })
 
@@ -91,6 +93,7 @@ export const citasService = {
 
     // request a supabase para conseguir el detalle de una sola cita
     async getCitaById(env: Env, token: string, citaId: string) {
+        const cleanId = (citaId || '').trim().replace(/\/+$/, '')
         const supabase = createSupabaseUser(env, token)
 
         // Llamamos a la RPC con un límite amplio (limit)
@@ -100,13 +103,33 @@ export const citasService = {
             p_offset: 0,
         })
 
-        if (error) return { data: null, error: error.message }
+        if (!error && data) {
+            const cita = data.find((c: any) => c.id === cleanId)
+            if (cita) return { data: cita, error: null }
+        }
 
-        // Buscamos la cita específica, si no regresa la cita es porque no existe o el id no corresponde al usuario actual
-        const cita = data?.find((c: any) => c.id === citaId)
+        // Si no se encontró mediante la RPC o hay más citas, intentamos consulta directa
+        const { data: directData, error: directError } = await supabase
+            .from('citas')
+            .select(`
+                id, fecha_hora_inicio, fecha_hora_fin, estado, notas_cliente, resumen_doctor, created_at,
+                paciente:pacientes(id, nombre, apellido_paterno),
+                doctor:doctores(id, nombre_completo, especialidad),
+                procedimiento:procedimientos(id, nombre, duracion_minutos),
+                sucursal:sucursales(id, nombre, direccion, maps_url)
+            `)
+            .eq('id', cleanId)
+            .maybeSingle()
 
-        if (!cita) return { data: null, error: 'Cita no encontrada o sin autorización para verla' }
+        if (directError) {
+            console.error('Error al consultar cita directa:', directError.message)
+            return { data: null, error: error || directError.message }
+        }
 
-        return { data: cita, error: null }
+        if (!directData) {
+            return { data: null, error: 'Cita no encontrada o sin autorización para verla' }
+        }
+
+        return { data: directData, error: null }
     },
 }
