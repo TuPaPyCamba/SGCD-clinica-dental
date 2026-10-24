@@ -5,8 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 SUPABASE_URL = "https://ytvurayayttmtgzcfejh.supabase.co"
-SUPABASE_SERVICE_ROLE_KEY = ""
-CORS_ORIGIN = "*"
+CORS_ORIGIN = "https://sgcd-clinica-dental.pages.dev"
 
 [dev]
 port = 8787
