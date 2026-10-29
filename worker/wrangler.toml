@@ -5,6 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 SUPABASE_URL = "https://ytvurayayttmtgzcfejh.supabase.co"
+SUPABASE_ANON_KEY = "sb_publishable_Rpy6C_3U04p1Kopzr5cVxw_1gTLvNer"
 CORS_ORIGIN = "https://sgcd-clinica-dental.pages.dev"
 
 [dev]

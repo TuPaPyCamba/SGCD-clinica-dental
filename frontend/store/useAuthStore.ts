@@ -53,8 +53,17 @@ export const useAuthStore = create<AuthState>()(
                     if (session) {
                         let perfil = get().perfil
                         try {
-                            const { data } = await supabase.rpc('rpc_get_mi_perfil')
-                            if (data) perfil = data
+                            const { data, error } = await supabase.rpc('rpc_get_mi_perfil')
+                            if (data && !error) {
+                                perfil = data
+                            } else {
+                                const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL || 'http://localhost:8787'
+                                const res = await fetch(`${workerUrl}/api/auth/me`, {
+                                    headers: { Authorization: `Bearer ${session.access_token}` },
+                                })
+                                const json = (await res.json()) as { success: boolean; data: PerfilUsuario }
+                                if (json.success && json.data) perfil = json.data
+                            }
                         } catch (rpcErr) {
                             console.warn('No se pudo obtener perfil detallado:', rpcErr)
                         }
@@ -97,8 +106,17 @@ if (typeof window !== 'undefined') {
             useAuthStore.getState().setSession(session)
             useAuthStore.getState().setUser(session.user)
             try {
-                const { data } = await supabase.rpc('rpc_get_mi_perfil')
-                if (data) useAuthStore.getState().setPerfil(data)
+                const { data, error } = await supabase.rpc('rpc_get_mi_perfil')
+                if (data && !error) {
+                    useAuthStore.getState().setPerfil(data)
+                } else {
+                    const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL || 'http://localhost:8787'
+                    const res = await fetch(`${workerUrl}/api/auth/me`, {
+                        headers: { Authorization: `Bearer ${session.access_token}` },
+                    })
+                    const json = (await res.json()) as { success: boolean; data: PerfilUsuario }
+                    if (json.success && json.data) useAuthStore.getState().setPerfil(json.data)
+                }
             } catch {
                 // Ignore fallback
             }
